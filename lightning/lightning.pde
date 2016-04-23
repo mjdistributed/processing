@@ -1,7 +1,8 @@
 
 Curve[] curves;
 int numBolts = 3;  
-int maxSpeed = 1; // maximum speed of curve growth, in pixels per iteration
+float maxSpeed = 2.0; // maximum speed of curve growth, in pixels per iteration
+float minSpeed = 0.8; // minimum speed of curve growth, in pixels per iteration
 
 void setup() {
   size(600, 400);
@@ -11,9 +12,9 @@ void setup() {
   // initialize lightning bolts
   curves = new Curve[numBolts];
   for (int i = 0; i < numBolts; i++) {
-    int speed = (int)random(maxSpeed + 1);
+    float speed = random(minSpeed, maxSpeed);
     int xDisplacement = (i + 1) * width/(numBolts + 1);
-    curves[i] = new Curve(xDisplacement, maxSpeed); 
+    curves[i] = new Curve(xDisplacement, speed); 
   }
 }
 
@@ -36,9 +37,9 @@ int getRandomMinLength() {
 class Curve {
   float amplitude = 20.0;  // width of wave
   float period = 100.0;  // How many pixels before the wave repeats
-  int topLength = 0; // length of top half of the wave, in pixels
-  int bottomLength = 0; // length of bottom half of the wave, in pixels
-  int speed = 1; // rate at which curve grows, in pixels per iteration 
+  float topLength = 0; // length of top half of the wave, in pixels
+  float bottomLength = 0; // length of bottom half of the wave, in pixels
+  float speed = 1; // rate at which curve grows, in pixels per iteration 
   int dTop = 1; // directionality of top of curve growth, should always be in {-1, 1}
   int dBottom = 1; // directionality of bottom of curve growth, should always be in {-1, 1}
   float maxTopLength;
@@ -47,7 +48,7 @@ class Curve {
   float minBottomLength;
   Point[] points;
     
-  public Curve(int xDisplacement, int speed) {
+  public Curve(int xDisplacement, float speed) {
     this.points = new Point[height];
     this.maxTopLength = getRandomMaxLength();
     this.minTopLength = getRandomMinLength();
@@ -65,7 +66,7 @@ class Curve {
   }
   
   public void render() {
-    for (int y = height/2 - topLength; y < height/2 + bottomLength - 1; y ++) {
+    for (int y = (int)(height/2 - topLength); y < height/2 + bottomLength - 1; y ++) {
       int index = max(0, min(y, height - 1));
       point(points[index].x, points[index].y);
     }
