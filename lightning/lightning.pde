@@ -1,7 +1,7 @@
 
 Curve[] curves;
-int numBolts = 100;  
-
+int numBolts = 3;  
+int maxSpeed = 1; // maximum speed of curve growth, in pixels per iteration
 
 void setup() {
   size(600, 400);
@@ -11,7 +11,9 @@ void setup() {
   // initialize lightning bolts
   curves = new Curve[numBolts];
   for (int i = 0; i < numBolts; i++) {
-      curves[i] = new Curve((i + 1) * width/(numBolts + 1)); 
+    int speed = (int)random(maxSpeed + 1);
+    int xDisplacement = (i + 1) * width/(numBolts + 1);
+    curves[i] = new Curve(xDisplacement, maxSpeed); 
   }
 }
 
@@ -36,61 +38,68 @@ class Curve {
   float period = 100.0;  // How many pixels before the wave repeats
   int topLength = 0; // length of top half of the wave, in pixels
   int bottomLength = 0; // length of bottom half of the wave, in pixels
-  int dTop = 1; // rate at which length of top changes, in pixels
-  int dBottom = 1; // rate at which length of bottom changes, in pixels
+  int speed = 1; // rate at which curve grows, in pixels per iteration 
+  int dTop = 1; // directionality of top of curve growth, should always be in {-1, 1}
+  int dBottom = 1; // directionality of bottom of curve growth, should always be in {-1, 1}
   float maxTopLength;
   float maxBottomLength;
   float minTopLength;
   float minBottomLength;
   Point[] points;
     
-  public Curve(int xDisplacement) {
-    points = new Point[height];
-    maxTopLength = getRandomMaxLength();
-    minTopLength = getRandomMinLength();
-    topLength = (int)minTopLength;
-    maxBottomLength = getRandomMaxLength();
-    minBottomLength = getRandomMinLength();
-    bottomLength = (int)minBottomLength;
+  public Curve(int xDisplacement, int speed) {
+    this.points = new Point[height];
+    this.maxTopLength = getRandomMaxLength();
+    this.minTopLength = getRandomMinLength();
+    this.topLength = (int)minTopLength;
+    this.maxBottomLength = getRandomMaxLength();
+    this.minBottomLength = getRandomMinLength();
+    this.bottomLength = (int)minBottomLength;
+    this.speed = speed;
     obtainCurve(xDisplacement);
   }
   
-  void grow() {
+  public void grow() {
     updateTopLength();
     updateBottomLength();
   }
   
-  void render() {
+  public void render() {
     for (int y = height/2 - topLength; y < height/2 + bottomLength - 1; y ++) {
-      point(points[y].x, points[y].y);
+      int index = max(0, min(y, height - 1));
+      point(points[index].x, points[index].y);
     }
   }
   
-  void updateTopLength() {
-    topLength += dTop;
+  private void updateTopLength() {
+    topLength += dTop * speed;
     if (topLength >= maxTopLength && dTop > 0 || topLength < minTopLength && dTop < 0) {
       if (topLength >= maxTopLength) {
         maxTopLength = getRandomMaxLength();
+        dTop = -1;
       }
       if (topLength < minTopLength) {
         minTopLength = getRandomMinLength();
+        dTop = 1;
       }
-      dTop *= -1;
-      topLength += dTop; 
+      //dTop *= -1;
+      //topLength += dTop * speed; 
     }
   }
   
-  void updateBottomLength() {
-    bottomLength += dBottom;
+  private void updateBottomLength() {
+    bottomLength += dBottom * speed;
     if (bottomLength >= maxBottomLength && dBottom > 0 || bottomLength < minBottomLength && dBottom < 0) {
       if (bottomLength >= maxBottomLength) {
         maxBottomLength = getRandomMaxLength(); 
+        dBottom = -1;
       }
       if (bottomLength < minBottomLength) {
         minBottomLength = getRandomMinLength();
+        dBottom = 1;
       }
-      dBottom *= -1;
-      bottomLength += dBottom;
+      //dBottom *= -1;
+      //bottomLength += dBottom * speed;
     }
   }
   
