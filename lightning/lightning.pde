@@ -1,13 +1,18 @@
+
 Curve[] curves;
-  
+int numBolts = 100;  
+
+
 void setup() {
-  size(640, 360);
+  size(600, 400);
   stroke(255);
   fill(255);
-  curves = new Curve[3];
-  curves[0] = new Curve(width/2);
-  curves[1] = new Curve(width/4);
-  curves[2] = new Curve((int)(width * 3.0/4));
+  
+  // initialize lightning bolts
+  curves = new Curve[numBolts];
+  for (int i = 0; i < numBolts; i++) {
+      curves[i] = new Curve((i + 1) * width/(numBolts + 1)); 
+  }
 }
 
 void draw() {
