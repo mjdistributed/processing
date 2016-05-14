@@ -1,7 +1,7 @@
 
 Curve[] curves;
-int numBolts = 3;  
-float maxSpeed = 2.0; // maximum speed of curve growth, in pixels per iteration
+int numBolts = 150;  
+float maxSpeed = 1.0; // maximum speed of curve growth, in pixels per iteration
 float minSpeed = 0.8; // minimum speed of curve growth, in pixels per iteration
 
 void setup() {
